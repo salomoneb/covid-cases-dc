@@ -8,14 +8,24 @@
           >The New York Times</a
         >
       </p>
-      <main v-for="(week, weekIdx) in sortedCases" :key="uniqueId(weekIdx)">
-        <p>Week: {{ weekNumber(weekIdx) }}</p>
+      <main class="cases">
         <div
           class="week"
-          v-for="(day, dayIdx) in week[1]"
-          :key="uniqueId(dayIdx)"
+          v-for="(week, weekIdx) in sortedCases"
+          :key="uniqueId(weekIdx)"
         >
-          <p>{{ day }}</p>
+          <p class="week__number">Week: {{ weekNumber(weekIdx) }}</p>
+          <div
+            class="day"
+            v-for="({ date, cases, deaths, fatality_percentage },
+            dayIdx) in week[1]"
+            :key="uniqueId(dayIdx)"
+          >
+            <p>Date {{ date.toLocaleString("en") }}</p>
+            <p>Cases {{ cases }}</p>
+            <p>Deaths {{ deaths }}</p>
+            <p>Fatality Percentage {{ fatality_percentage }}</p>
+          </div>
         </div>
       </main>
     </div>
@@ -34,6 +44,7 @@ export default {
   // },
   computed: {
     sortedCases() {
+      // Sort in reverse-chronological order
       return Object.entries(this.cases).sort((a, b) => b[0] - a[0]);
     },
   },
@@ -51,3 +62,20 @@ export default {
   },
 };
 </script>
+
+<style>
+.cases {
+  display: flex;
+  flex-direction: column;
+}
+.week {
+  display: grid;
+  grid-template-columns: repeat(minmax(auto, 8), 1fr);
+  grid-column-gap: 1rem;
+  margin-top: 2rem;
+}
+.week__number {
+  order: 1;
+  grid-column: 8;
+}
+</style>
