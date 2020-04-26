@@ -8,11 +8,16 @@
           >The New York Times</a
         >
       </p>
-      <!-- <main v-for="(day, idx) in sortedData" :key="idx">
-        <div class="week">
-          <Day :data="day" />
+      <main v-for="(week, weekIdx) in sortedCases" :key="uniqueId(weekIdx)">
+        <p>Week: {{ weekNumber(weekIdx) }}</p>
+        <div
+          class="week"
+          v-for="(day, dayIdx) in week[1]"
+          :key="uniqueId(dayIdx)"
+        >
+          <p>{{ day }}</p>
         </div>
-      </main>-->
+      </main>
     </div>
   </div>
 </template>
@@ -27,14 +32,22 @@ export default {
   // components: {
   //   Day
   // },
-  data() {
-    return {
-      sortedData: [],
-    };
+  computed: {
+    sortedCases() {
+      return Object.entries(this.cases).sort((a, b) => b[0] - a[0]);
+    },
+  },
+  methods: {
+    uniqueId(num) {
+      return num + +new Date();
+    },
+    weekNumber(weekIdx) {
+      return this.sortedCases.length - weekIdx;
+    },
   },
   async asyncData(context) {
-    const res = await getAndTransformData(SOURCE_DATA);
-    console.log(res);
+    const data = await getAndTransformData(SOURCE_DATA);
+    return { cases: data };
   },
 };
 </script>

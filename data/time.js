@@ -1,6 +1,7 @@
 /**
  * Gets the first Sunday of the month
  * @param {Date} firstEntry
+ * @returns {Date}
  */
 export const getFirstSunday = function (firstEntry) {
   const year = firstEntry.getFullYear();
@@ -18,4 +19,30 @@ export const getFirstSunday = function (firstEntry) {
   }
 
   return new Date(year, month, firstSundayDay);
+};
+
+/**
+ * Group Covid data by week
+ * @param {Array} sortedData
+ * @returns {Object}
+ */
+export const groupDataByWeek = function (sortedData) {
+  const MS_IN_WEEK = 24 * 7 * 60 * 60 * 1000;
+
+  const firstSunday = getFirstSunday(sortedData[0].date);
+  let currSunday = Date.parse(firstSunday);
+  let initial = {
+    [currSunday]: [],
+  };
+
+  return sortedData.reduce((acc, curr) => {
+    let nextSunday = Date.parse(new Date(currSunday + MS_IN_WEEK));
+
+    if (curr.date > nextSunday) {
+      currSunday = nextSunday;
+      acc[currSunday] = [];
+    }
+    acc[currSunday].push(curr);
+    return acc;
+  }, initial);
 };
