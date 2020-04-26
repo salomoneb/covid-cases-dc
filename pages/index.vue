@@ -9,24 +9,12 @@
         >
       </p>
       <main class="cases">
-        <div
-          class="week"
-          v-for="(week, weekIdx) in sortedCases"
-          :key="uniqueId(weekIdx)"
-        >
-          <p class="week__number">Week: {{ weekNumber(weekIdx) }}</p>
-          <div
-            class="day"
-            v-for="({ date, cases, deaths, fatality_percentage },
-            dayIdx) in week[1]"
-            :key="uniqueId(dayIdx)"
-          >
-            <p>Date {{ date.toLocaleString("en") }}</p>
-            <p>Cases {{ cases }}</p>
-            <p>Deaths {{ deaths }}</p>
-            <p>Fatality Percentage {{ fatality_percentage }}</p>
-          </div>
-        </div>
+        <Week
+          v-for="(week, idx) in sortedCases"
+          :key="idx"
+          :week="week"
+          :weekNumber="weekNumber(idx)"
+        />
       </main>
     </div>
   </div>
@@ -34,43 +22,52 @@
 
 <script>
 import { getAndTransformData } from "~/data/transforms";
+import { groupDataByWeek } from "~/data/time";
+
+import Week from "~/components/Week";
 
 const SOURCE_DATA =
   "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv";
 
 export default {
-  // components: {
-  //   Day
-  // },
+  components: {
+    Week,
+  },
   computed: {
+    groupedByWeekCases() {
+      return groupDataByWeek(this.cases);
+    },
     sortedCases() {
       // Sort in reverse-chronological order
-      return Object.entries(this.cases).sort((a, b) => b[0] - a[0]);
+      return Object.entries(this.groupedByWeekCases).sort(
+        (a, b) => b[0] - a[0]
+      );
     },
   },
   methods: {
-    uniqueId(num) {
-      return num + +new Date();
-    },
-    weekNumber(weekIdx) {
-      return this.sortedCases.length - weekIdx;
+    weekNumber(idx) {
+      return this.sortedCases.length - idx;
     },
   },
   async asyncData(context) {
-    const data = await getAndTransformData(SOURCE_DATA);
-    return { cases: data };
+    return { cases: await getAndTransformData(SOURCE_DATA) };
   },
 };
 </script>
 
 <style>
+.container {
+  font-family: "Georgia";
+  margin-left: 5rem;
+  margin-top: 1rem;
+}
 .cases {
   display: flex;
   flex-direction: column;
 }
 .week {
   display: grid;
-  grid-template-columns: repeat(minmax(auto, 8), 1fr);
+  grid-template-columns: repeat(8, 1fr);
   grid-column-gap: 1rem;
   margin-top: 2rem;
 }

@@ -6,8 +6,7 @@ export const getAndTransformData = async function (url) {
     .then((res) => res.split("\n").slice(1))
     .then(casesToJson)
     .then(filterDc)
-    .then(sortData)
-    .then(groupDataByWeek);
+    .then(sortData);
 };
 
 /**
@@ -27,7 +26,6 @@ function casesToJson(allCases) {
       state: state,
       cases: cases,
       deaths: deaths,
-      fatality_percentage: Math.round((deaths / cases) * 10000) / 100,
     };
   });
 }
