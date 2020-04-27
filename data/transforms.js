@@ -6,8 +6,58 @@ export const getAndTransformData = async function (url) {
     .then((res) => res.split("\n").slice(1))
     .then(casesToJson)
     .then(filterDc)
-    .then(sortData);
+    .then(sortData)
+    .then(groupDataByWeek)
+    .then(appendWeeklyData);
 };
+
+/**
+ * Calculate weekly totals and change
+ * @param {Object} data
+ * @returns {Object}
+ */
+function appendWeeklyData(data) {
+  let augmented = {};
+  let prevWeekKey = "";
+
+  for (let [key, daily] of Object.entries(data)) {
+    let weekly = {
+      deaths: {
+        total: sum(daily, "deaths"),
+      },
+      cases: {
+        total: sum(daily, "cases"),
+      },
+    };
+
+    // Week-over-week change
+    if (prevWeekKey) {
+      ["cases", "deaths"].forEach((prop) => {
+        let prev = augmented[prevWeekKey].weekly[prop].total;
+        let curr = weekly[prop].total;
+        weekly[prop].change = delta(prev, curr);
+      });
+    }
+
+    augmented[key] = {
+      weekly,
+      daily,
+    };
+
+    prevWeekKey = key;
+  }
+  return augmented;
+}
+
+function delta(prev, curr) {
+  return ((curr - prev) / prev) * 100;
+}
+
+function sum(arr, prop) {
+  return arr.reduce((acc, curr) => {
+    return (acc += curr[prop]);
+  }, 0);
+}
 
 /**
  * Convert CSV cases to JSON

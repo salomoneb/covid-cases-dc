@@ -4,9 +4,7 @@
       <h1>Covid-19 Cases and Deaths in DC</h1>
       <p>
         Data via
-        <a href="https://github.com/nytimes/covid-19-data"
-          >The New York Times</a
-        >
+        <a href="https://github.com/nytimes/covid-19-data">The New York Times</a>
       </p>
       <main class="cases">
         <!-- <Week
@@ -14,15 +12,14 @@
           :key="idx"
           :week="week"
           :weekNumber="weekNumber(idx)"
-        /> -->
-        {{ test }}
+        />-->
       </main>
     </div>
   </div>
 </template>
 
 <script>
-import { getAndTransformData } from "~/data/transforms";
+import { getAndTransformData, appendWeeklyData } from "~/data/transforms";
 import { groupDataByWeek } from "~/data/time";
 
 import Week from "~/components/Week";
@@ -35,25 +32,6 @@ export default {
     Week,
   },
   computed: {
-    // parsedData() {
-    //   const weeks = Object.entries(this.groupedByWeekCases);
-    //   return weeks.reduce((acc, [key, val], idx) => {
-    //     acc[key] = {
-    //       weekData: {
-    //         cases: this.sumTotal(val.filter((el) => el.cases)),
-    //         deaths: this.sumTotal(val.filter((el) => el.deaths)),
-    //       },
-    //       cases: [val],
-    //     };
-    //     return acc;
-    //   }, {});
-    // },
-    test() {
-      return this.groupedByWeekCases[1587272400000].reduce(
-        (acc, val) => (acc += val.cases),
-        0
-      );
-    },
     groupedByWeekCases() {
       return groupDataByWeek(this.cases);
     },
@@ -65,12 +43,13 @@ export default {
     },
   },
   methods: {
-    sumTotal(arr) {
-      return arr.reduce((acc, curr) => (acc += curr));
-    },
     weekNumber(idx) {
-      return this.groupedByWeekCases.length - idx;
+      return this.cases.length - idx;
     },
+  },
+  mounted() {
+    console.log(this.cases)
+    // console.log(appendWeeklyData(this.cases))
   },
   async asyncData(context) {
     return { cases: await getAndTransformData(SOURCE_DATA) };
