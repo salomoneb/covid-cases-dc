@@ -1,6 +1,6 @@
 <template>
   <div class="week">
-    <pre>{{ JSON.stringify(week) }}</pre>
+    {{ JSON.stringify(week) }}
     <!-- <p>Date {{ date.toLocaleString("en") }}</p>
     <p>Cases {{ cases }}</p>
     <p>Deaths {{ deaths }}</p>-->
@@ -13,10 +13,6 @@ export default {
     week: {
       type: Object,
       default: {},
-    },
-    days: {
-      type: Object,
-      default: {}
     }
   },
 };

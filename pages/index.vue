@@ -7,12 +7,7 @@
         <a href="https://github.com/nytimes/covid-19-data">The New York Times</a>
       </p>
       <main class="cases">
-        <Week
-          v-for="(week, idx) in reversedWeeks"
-          :key="week[0]"
-          :week="week[1].weekly"
-          :days="week[1].daily"
-        />
+        <Week v-for="(week, idx) in reversedWeeks" :key="idx" :week="week[1]" />
       </main>
     </div>
   </div>
