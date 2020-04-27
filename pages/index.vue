@@ -7,12 +7,12 @@
         <a href="https://github.com/nytimes/covid-19-data">The New York Times</a>
       </p>
       <main class="cases">
-        <!-- <Week
+        <Week
           v-for="(week, idx) in reversedWeeks"
-          :key="idx"
-          :week="week"
-          :weekNumber="weekNumber(idx)"
-        />-->
+          :key="week[0]"
+          :week="week[1].weekly"
+          :days="week[1].daily"
+        />
       </main>
     </div>
   </div>
@@ -32,24 +32,11 @@ export default {
     Week,
   },
   computed: {
-    groupedByWeekCases() {
-      return groupDataByWeek(this.cases);
-    },
     reversedWeeks() {
-      // Sort in reverse-chronological order
-      return Object.entries(this.groupedByWeekCases).sort(
+      return Object.entries(this.cases).sort(
         (a, b) => b[0] - a[0]
       );
     },
-  },
-  methods: {
-    weekNumber(idx) {
-      return this.cases.length - idx;
-    },
-  },
-  mounted() {
-    console.log(this.cases)
-    // console.log(appendWeeklyData(this.cases))
   },
   async asyncData(context) {
     return { cases: await getAndTransformData(SOURCE_DATA) };

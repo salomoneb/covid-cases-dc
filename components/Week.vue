@@ -3,7 +3,7 @@
     <pre>{{ JSON.stringify(week) }}</pre>
     <!-- <p>Date {{ date.toLocaleString("en") }}</p>
     <p>Cases {{ cases }}</p>
-    <p>Deaths {{ deaths }}</p> -->
+    <p>Deaths {{ deaths }}</p>-->
   </div>
 </template>
 
@@ -11,12 +11,13 @@
 export default {
   props: {
     week: {
-      type: Array,
-      default: [],
+      type: Object,
+      default: {},
     },
-    weekNumber: {
-      type: Number,
-    },
+    days: {
+      type: Object,
+      default: {}
+    }
   },
 };
 </script>

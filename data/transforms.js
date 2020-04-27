@@ -12,7 +12,7 @@ export const getAndTransformData = async function (url) {
 };
 
 /**
- * Calculate weekly totals and change
+ * Calculate weekly totals and deltas
  * @param {Object} data
  * @returns {Object}
  */
@@ -20,8 +20,11 @@ function appendWeeklyData(data) {
   let augmented = {};
   let prevWeekKey = "";
 
-  for (let [key, daily] of Object.entries(data)) {
+  const dataArr = Object.entries(data);
+
+  for (let [index, [key, daily]] of dataArr.entries()) {
     let weekly = {
+      weekNumber: index + 1,
       deaths: {
         total: sum(daily, "deaths"),
       },
