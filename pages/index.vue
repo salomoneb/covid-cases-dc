@@ -9,12 +9,13 @@
         >
       </p>
       <main class="cases">
-        <Week
-          v-for="(week, idx) in sortedCases"
+        <!-- <Week
+          v-for="(week, idx) in reversedWeeks"
           :key="idx"
           :week="week"
           :weekNumber="weekNumber(idx)"
-        />
+        /> -->
+        {{ test }}
       </main>
     </div>
   </div>
@@ -34,10 +35,29 @@ export default {
     Week,
   },
   computed: {
+    // parsedData() {
+    //   const weeks = Object.entries(this.groupedByWeekCases);
+    //   return weeks.reduce((acc, [key, val], idx) => {
+    //     acc[key] = {
+    //       weekData: {
+    //         cases: this.sumTotal(val.filter((el) => el.cases)),
+    //         deaths: this.sumTotal(val.filter((el) => el.deaths)),
+    //       },
+    //       cases: [val],
+    //     };
+    //     return acc;
+    //   }, {});
+    // },
+    test() {
+      return this.groupedByWeekCases[1587272400000].reduce(
+        (acc, val) => (acc += val.cases),
+        0
+      );
+    },
     groupedByWeekCases() {
       return groupDataByWeek(this.cases);
     },
-    sortedCases() {
+    reversedWeeks() {
       // Sort in reverse-chronological order
       return Object.entries(this.groupedByWeekCases).sort(
         (a, b) => b[0] - a[0]
@@ -45,8 +65,11 @@ export default {
     },
   },
   methods: {
+    sumTotal(arr) {
+      return arr.reduce((acc, curr) => (acc += curr));
+    },
     weekNumber(idx) {
-      return this.sortedCases.length - idx;
+      return this.groupedByWeekCases.length - idx;
     },
   },
   async asyncData(context) {
