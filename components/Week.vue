@@ -10,11 +10,13 @@
     />
     <div class="week__total">
       <p class="week__total--cases">
-        <span>Cases:</span> <span>{{ totalCases }}</span>
+        <span>Cases:</span>
+        <span>{{ totalCases }}</span>
         <span>{{ casesChange }}%</span>
       </p>
       <p class="week__total--deaths">
-        <span>Deaths:</span> <span>{{ totalDeaths }}</span>
+        <span>Deaths:</span>
+        <span>{{ totalDeaths }}</span>
         <span>{{ deathChange }}%</span>
       </p>
     </div>
@@ -75,15 +77,18 @@ export default {
     margin-top: 2rem;
   }
 
+  &__number {
+    font-family: "SF-Pro";
+    grid-row: 1;
+  }
+
   &__day {
     grid-row: 2;
   }
 
-  &__number {
-    grid-row: 1;
-  }
-
   &__total {
+    font-family: Georgia;
+    font-weight: 100;
     grid-row: 2;
     grid-column: 8;
   }

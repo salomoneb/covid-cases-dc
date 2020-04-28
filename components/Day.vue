@@ -1,8 +1,14 @@
 <template>
   <div class="day">
-    <p>{{ date }}</p>
-    <p>Cases: {{ cases }}</p>
-    <p>Deaths: {{ deaths }}</p>
+    <p class="day__date">{{ date }}</p>
+    <p class="day__stat day__stat--cases">
+      <span>Cases</span>
+      <span class="day__stat-number">{{ cases }}</span>
+    </p>
+    <p class="day__stat day__stat--deaths">
+      <span>Deaths</span>
+      <span class="day__stat-number">{{ deaths }}</span>
+    </p>
   </div>
 </template>
 
@@ -19,7 +25,6 @@ export default {
     date() {
       const format = {
         weekday: "short",
-        year: "numeric",
         month: "long",
         day: "numeric",
       };
@@ -37,8 +42,24 @@ export default {
 </script>
 <style lang="scss">
 .day {
-  border: 1px solid;
-  border-radius: 3px;
-  padding: 2rem 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-family: sans-serif;
+  font-weight: 100;
+
+  &__date {
+    grid-column: 1 / span 2;
+    grid-column-gap: 1rem;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column-reverse;
+    width: min-content;
+
+    &-number {
+      font-size: 2rem;
+    }
+  }
 }
 </style>

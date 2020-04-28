@@ -1,12 +1,10 @@
 <template>
   <div class="container">
     <div>
-      <h1>Covid-19 Cases and Deaths in DC</h1>
+      <h1 class="heading">Covid-19 Cases and Deaths in DC</h1>
       <p>
         Data via
-        <a href="https://github.com/nytimes/covid-19-data"
-          >The New York Times</a
-        >
+        <a href="https://github.com/nytimes/covid-19-data">The New York Times</a>
       </p>
       <main class="cases">
         <Week
@@ -21,9 +19,8 @@
 </template>
 
 <script>
-import { getAndTransformData } from "~/data/transform";
-
 import Week from "~/components/Week";
+import { getAndTransformData } from "~/data/transform";
 
 const SOURCE_DATA =
   "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv";
@@ -47,8 +44,16 @@ export default {
 </script>
 
 <style>
+@font-face {
+  font-family: "SF-Pro";
+  src: url("~assets/fonts/SF-Pro-Text-Black.woff2");
+}
+
+.heading {
+  font-family: "SF-Pro";
+}
+
 .container {
-  font-family: "Georgia";
   margin: 1rem 5rem;
 }
 .cases {
