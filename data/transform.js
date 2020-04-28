@@ -24,12 +24,14 @@ function appendWeeklyData(data) {
 
   for (let [index, [key, daily]] of dataArr.entries()) {
     let weekly = {
-      weekNumber: index + 1,
+      number: index + 1,
       deaths: {
         total: sum(daily, "deaths"),
+        change: 0,
       },
       cases: {
         total: sum(daily, "cases"),
+        change: 0,
       },
     };
 
@@ -53,6 +55,14 @@ function appendWeeklyData(data) {
 }
 
 function delta(prev, curr) {
+  if (prev === 0) {
+    if (curr > 1) {
+      prev = 1;
+    } else {
+      return 0;
+    }
+  }
+  // Assuming both current and previous totals positive
   return ((curr - prev) / prev) * 100;
 }
 

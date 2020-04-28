@@ -1,19 +1,44 @@
 <template>
   <div class="day">
-    <pre>{{ JSON.stringify(data, null, 2) }}</pre>
+    <p>{{ date }}</p>
+    <p>Cases: {{ cases }}</p>
+    <p>Deaths: {{ deaths }}</p>
   </div>
 </template>
 
 <script>
+import { formatNum } from "~/helpers/numbers";
 export default {
   props: {
-    data: {
+    day: {
       type: Object,
-      default: {}
-    }
+      default: {},
+    },
   },
-}
-</script>
+  computed: {
+    date() {
+      const format = {
+        weekday: "short",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
 
-<style>
+      return this.day.date.toLocaleString("en-US", format);
+    },
+    cases() {
+      return formatNum(this.day.cases);
+    },
+    deaths() {
+      return formatNum(this.day.deaths);
+    },
+  },
+};
+</script>
+<style lang="scss">
+.day {
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 2rem 1rem;
+}
 </style>
