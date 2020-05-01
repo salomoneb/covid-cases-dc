@@ -8,7 +8,7 @@ export const getAndTransformData = async function (url) {
     .then(filterDc)
     .then(sortData)
     .then(groupDataByWeek)
-    .then(appendWeeklyData);
+    .then(appendWeeklyAndTotalData);
 };
 
 /**
@@ -16,13 +16,14 @@ export const getAndTransformData = async function (url) {
  * @param {Object} data
  * @returns {Object}
  */
-function appendWeeklyData(data) {
+function appendWeeklyAndTotalData(data) {
   let augmented = {};
   let prevWeekKey = "";
 
   const dataArr = Object.entries(data);
 
   for (let [index, [key, daily]] of dataArr.entries()) {
+    // Weekly stats
     let weekly = {
       number: index + 1,
       deaths: {
@@ -35,16 +36,25 @@ function appendWeeklyData(data) {
       },
     };
 
+    // Total stats
+    let total = {
+      deaths: 0,
+      cases: 0,
+    };
+
     // Week-over-week change
     if (prevWeekKey) {
       ["cases", "deaths"].forEach((prop) => {
         let prev = augmented[prevWeekKey].weekly[prop].total;
         let curr = weekly[prop].total;
         weekly[prop].change = delta(prev, curr);
+
+        total[prop] += prev + curr;
       });
     }
 
     augmented[key] = {
+      total,
       weekly,
       daily,
     };

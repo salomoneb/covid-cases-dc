@@ -3,11 +3,11 @@
     <p class="day__date">{{ date }}</p>
     <p class="day__stat day__stat--cases">
       <span>Cases</span>
-      <span class="day__stat-number">{{ cases }}</span>
+      <span class="day__stat-number"> {{ cases }}</span>
     </p>
     <p class="day__stat day__stat--deaths">
       <span>Deaths</span>
-      <span class="day__stat-number">{{ deaths }}</span>
+      <span class="day__stat-number"> {{ deaths }}</span>
     </p>
   </div>
 </template>
