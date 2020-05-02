@@ -16,25 +16,27 @@
         >.
       </p>
 
-      <h2>Week-Over-Week Change</h2>
-      <week-card
-        v-for="(week, idx) in weekCardData"
-        :key="idx"
-        :cases="week.cases"
-        :cases-delta="week.casesDelta"
-        :deaths-delta="week.deathsDelta"
-        :deaths="week.deaths"
-        :number="week.number"
-        :start="week.start"
-        :end="week.end"
-      ></week-card>
+      <section class="main__week-card">
+        <h2 class="main__week-card-headline">Week-Over-Week Change</h2>
+        <week-card
+          v-for="(week, idx) in weekCardData"
+          :key="idx"
+          :cases="week.cases"
+          :cases-delta="week.casesDelta"
+          :deaths-delta="week.deathsDelta"
+          :deaths="week.deaths"
+          :number="week.number"
+          :start="week.start"
+          :end="week.end"
+        ></week-card>
+      </section>
     </div>
   </div>
 </template>
 
 <script>
-import { getAndTransformData } from "~/data/transform";
-import { formatNum } from "~/filters/numbers";
+import { getAndTransformData } from "~/services/transform";
+import { formatNum } from "~/services/numbers";
 import WeekCard from "~/components/WeekCard";
 
 const SOURCE_DATA =
@@ -136,9 +138,16 @@ h2 {
   font-size: 2.074rem;
 }
 
+h3,
+h4,
+h5,
+h6,
+p {
+  font-family: "IBM Plex Sans", Helvetica, sans-serif;
+}
+
 p {
   font-size: 1rem;
-  font-family: "IBM Plex Sans", Helvetica, sans-serif;
   margin-bottom: 1.2rem;
 }
 
@@ -157,14 +166,17 @@ a {
 .container {
   margin: 1rem 5rem;
 }
-.cases {
-  display: flex;
-  flex-direction: column;
-}
-.week {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-column-gap: 1rem;
-  margin-top: 2rem;
+.main {
+  &__week-card {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 1rem;
+    margin-top: 2rem;
+    max-width: 1000px;
+  }
+
+  &__week-card-headline {
+    grid-column: 1 / -1;
+  }
 }
 </style>

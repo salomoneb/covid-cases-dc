@@ -1,4 +1,4 @@
-import { groupDataByWeek } from "~/data/time";
+import { groupDataByWeek } from "~/services/time";
 
 export const getAndTransformData = async function (url) {
   return await fetch(url)
