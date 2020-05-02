@@ -111,10 +111,6 @@ export default {
   &__delta {
     font-size: 2rem;
 
-    &.neutral {
-      opacity: 0.5;
-    }
-
     .number {
       border-bottom: 1px dotted var(--grey);
       cursor: help;

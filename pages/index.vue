@@ -16,10 +16,12 @@
         >.
       </p>
 
-      <section class="main__week-card">
-        <h2 class="main__week-card-headline">Week-Over-Week Change</h2>
+      <section class="main__week-data">
+        <h2 class="span-full">Week-Over-Week Change</h2>
+        <radio-buttons class="span-full" />
         <week-card
           v-for="(week, idx) in weekCardData"
+          class="main__week-card"
           :key="idx"
           :cases="week.cases"
           :cases-delta="week.casesDelta"
@@ -37,6 +39,7 @@
 <script>
 import { getAndTransformData } from "~/services/transform";
 import { formatNum } from "~/services/numbers";
+import RadioButtons from "~/components/RadioButtons";
 import WeekCard from "~/components/WeekCard";
 
 const SOURCE_DATA =
@@ -44,6 +47,7 @@ const SOURCE_DATA =
 
 export default {
   components: {
+    RadioButtons,
     WeekCard,
   },
   computed: {
@@ -165,15 +169,21 @@ a {
 }
 .main {
   &__week-card {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-column-gap: 1rem;
-    margin-top: 2rem;
-    max-width: 1000px;
+    flex-basis: 33%;
   }
 
-  &__week-card-headline {
-    grid-column: 1 / -1;
+  &__week-data {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    max-width: 1000px;
+
+    @supports (display: grid) {
+      display: grid;
+      grid-column-gap: 1rem;
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 }
 </style>
