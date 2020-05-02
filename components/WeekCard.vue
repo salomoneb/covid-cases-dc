@@ -3,11 +3,11 @@
     <p class="week__number"><span class="uppercase">Week</span> {{ number }}</p>
     <p class="week__delta--cases">
       Cases change
-      {{ cases.change }}
+      {{ casesDelta }}
     </p>
     <p class="week__delta--deaths">
       Deaths change
-      {{ deaths.change }} total {{ deaths.total }}
+      {{ deathsDelta }}
     </p>
     <p class="week__date--start">{{ start }}</p>
     <p class="week__date--end">{{ end }}</p>
@@ -18,14 +18,24 @@
 export default {
   props: {
     cases: {
-      type: Object,
+      type: Number,
       required: true,
-      default: {},
+      default: 0,
+    },
+    casesDelta: {
+      type: Number | String,
+      required: true,
+      default: 0,
     },
     deaths: {
-      type: Object,
+      type: Number,
       required: true,
-      default: {},
+      default: 0,
+    },
+    deathsDelta: {
+      type: Number | String,
+      required: true,
+      default: 0,
     },
     number: {
       type: Number,

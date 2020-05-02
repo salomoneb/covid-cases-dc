@@ -15,18 +15,19 @@
         <span>{{ latestDate }}</span
         >.
       </p>
-      <pre>{{ weekCardData }}</pre>
 
-      <!-- <h2>Week-Over-Week Change</h2>
+      <h2>Week-Over-Week Change</h2>
       <week-card
         v-for="(week, idx) in weekCardData"
         :key="idx"
         :cases="week.cases"
+        :cases-delta="week.casesDelta"
+        :deaths-delta="week.deathsDelta"
         :deaths="week.deaths"
         :number="week.number"
         :start="week.start"
         :end="week.end"
-      ></week-card> -->
+      ></week-card>
     </div>
   </div>
 </template>
@@ -46,7 +47,7 @@ export default {
   computed: {
     latestDate() {
       const latestDay = this.data.daily[this.data.daily.length - 1].date;
-      console.log(latestDay.toLocaleString());
+
       let options = {
         weekday: "long",
         year: "numeric",
