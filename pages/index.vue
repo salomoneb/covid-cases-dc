@@ -46,7 +46,7 @@ export default {
   computed: {
     latestDate() {
       const latestDay = this.data.daily[this.data.daily.length - 1].date;
-
+      console.log(latestDay.toLocaleString());
       let options = {
         weekday: "long",
         year: "numeric",
@@ -56,9 +56,6 @@ export default {
       };
       return latestDay.toLocaleString("en-US", options);
     },
-    reverseChronWeekData() {
-      return Object.entries(this.data.weekly).sort((a, b) => b[0] - a[0]);
-    },
     totalCases() {
       return formatNum(this.data.total.cases);
     },
@@ -66,28 +63,45 @@ export default {
       return formatNum(this.data.total.deaths);
     },
     updatedWeekData() {
-      return this.reverseChronWeekData.reduce((weekAcc, weekCurr, index) => {
-        const data = {
-          cases: week[1].reduce((acc, curr) => (acc += curr.cases), 0),
-          deaths: week[1].reduce((acc, curr) => (acc += curr.deaths), 0),
-          number: this.reverseChronWeekData.length - index,
-          start: week[1][0].date,
-          end: week[1][week[1].length - 1].date,
-        };
+      return Object.entries(this.data.weekly)
+        .reduce((weekAcc, weekCurr, index) => {
+          const data = {
+            cases: weekCurr[1].reduce((acc, curr) => (acc += curr.cases), 0),
+            deaths: weekCurr[1].reduce((acc, curr) => (acc += curr.deaths), 0),
+            number: index + 1,
+            start: weekCurr[1][0].date,
+            end: weekCurr[1][weekCurr[1].length - 1].date,
+          };
 
-        if (index > 0) {
-        }
-      }, []);
+          if (index > 0) {
+            let previousWeekCases = weekAcc[index - 1].cases;
+            data.casesDelta = this.delta(previousWeekCases, data.cases);
+
+            let previousWeekDeaths = weekAcc[index - 1].deaths;
+            data.deathsDelta = this.delta(previousWeekDeaths, data.deaths);
+          } else {
+            data.casesDelta = "N/A";
+            data.deathsDelta = "N/A";
+          }
+          weekAcc.push(data);
+          return weekAcc;
+        }, [])
+        .reverse();
     },
     weekCardData() {
       return this.updatedWeekData;
     },
   },
   methods: {
-    sumWeeklyStats(prop) {
-      return Object.values(this.data).reduce((acc, week) => {
-        return (acc += week.total[prop]);
-      }, 0);
+    delta(prevStat, currStat) {
+      if (prevStat === 0) {
+        if (currStat === 0) {
+          return 0;
+        }
+        prevStat = 1;
+      }
+      // Assuming both current and previous totals positive
+      return ((currStat - prevStat) / prevStat) * 100;
     },
   },
   mounted() {
