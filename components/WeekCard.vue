@@ -58,6 +58,7 @@ export default {
       };
     },
     deltaSymbol() {
+      if (isNaN(this.delta)) return;
       return this.delta > 0 ? "+" : "-";
     },
     endingDate() {

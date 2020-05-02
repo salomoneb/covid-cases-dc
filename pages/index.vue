@@ -1,12 +1,12 @@
 <template>
-  <div class="container">
+  <div class="root-container">
     <div>
       <h1 class="heading">Covid-19 Cases and Deaths in DC</h1>
       <p class="attribution">
         Data via
         <a href="https://github.com/nytimes/covid-19-data" target="_blank"
           >The New York Times</a
-        >
+        >.
       </p>
       <p>
         There have been
@@ -146,7 +146,8 @@ h3,
 h4,
 h5,
 h6,
-p {
+p,
+label {
   font-family: "IBM Plex Sans", Helvetica, sans-serif;
 }
 
@@ -164,8 +165,13 @@ a {
   font-weight: 700;
 }
 
-.container {
-  margin: 1rem 5rem;
+.root-container {
+  max-width: 1000px;
+  padding: 1rem 5rem;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 .main {
   &__week-card {
@@ -177,7 +183,6 @@ a {
     flex-direction: row;
     flex-wrap: wrap;
     margin-top: 2rem;
-    max-width: 1000px;
 
     @supports (display: grid) {
       display: grid;
