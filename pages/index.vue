@@ -3,122 +3,126 @@
     <div>
       <h1 class="heading">Covid-19 Cases and Deaths in DC</h1>
       <p class="attribution">
-        Data sourced from
+        Data via
         <a href="https://github.com/nytimes/covid-19-data" target="_blank"
           >The New York Times</a
         >
       </p>
       <p>
-        There have been a total of
-        <span class="stat">{{ totalCases }} reported cases</span> and
-        <span class="stat">{{ totalDeaths }} deaths</span> as of
+        There have been
+        <span class="stat">{{ totalCases }} reported cases</span>
+        and <span class="stat">{{ totalDeaths }} deaths</span> in DC as of
         <span>{{ latestDate }}</span
         >.
-        <!-- <main class="cases">
-        <Week
-          v-for="(week, idx) in reversedWeeks"
-          :key="idx"
-          :week="week[1].weekly"
-          :days="week[1].daily"
-        />
-      </main> -->
       </p>
+      <pre>{{ weekCardData }}</pre>
+
+      <!-- <h2>Week-Over-Week Change</h2>
+      <week-card
+        v-for="(week, idx) in weekCardData"
+        :key="idx"
+        :cases="week.cases"
+        :deaths="week.deaths"
+        :number="week.number"
+        :start="week.start"
+        :end="week.end"
+      ></week-card> -->
     </div>
   </div>
 </template>
 
 <script>
-import Week from "~/components/Week";
 import { getAndTransformData } from "~/data/transform";
+import { formatNum } from "~/filters/numbers";
+import WeekCard from "~/components/WeekCard";
 
 const SOURCE_DATA =
   "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv";
 
 export default {
   components: {
-    Week,
+    WeekCard,
   },
   computed: {
     latestDate() {
-      const weeks = Object.values(this.cases);
-      const latestWeek = weeks[weeks.length - 1];
-      const days = Object.values(latestWeek.daily);
+      const latestDay = this.data.daily[this.data.daily.length - 1].date;
 
       let options = {
         weekday: "long",
         year: "numeric",
         month: "long",
         day: "numeric",
+        timeZone: "America/New_York",
       };
-      return days[days.length - 1].date.toLocaleString("en-US", options);
+      return latestDay.toLocaleString("en-US", options);
+    },
+    reverseChronWeekData() {
+      return Object.entries(this.data.weekly).sort((a, b) => b[0] - a[0]);
     },
     totalCases() {
-      return this.sumStats("cases").toLocaleString();
+      return formatNum(this.data.total.cases);
     },
     totalDeaths() {
-      return this.sumStats("deaths").toLocaleString();
+      return formatNum(this.data.total.deaths);
     },
-    reversedWeeks() {
-      return Object.entries(this.cases).sort((a, b) => b[0] - a[0]);
+    updatedWeekData() {
+      return this.reverseChronWeekData.reduce((weekAcc, weekCurr, index) => {
+        const data = {
+          cases: week[1].reduce((acc, curr) => (acc += curr.cases), 0),
+          deaths: week[1].reduce((acc, curr) => (acc += curr.deaths), 0),
+          number: this.reverseChronWeekData.length - index,
+          start: week[1][0].date,
+          end: week[1][week[1].length - 1].date,
+        };
+
+        if (index > 0) {
+        }
+      }, []);
+    },
+    weekCardData() {
+      return this.updatedWeekData;
     },
   },
   methods: {
-    sumStats(prop) {
-      return Object.values(this.cases).reduce((acc, week) => {
+    sumWeeklyStats(prop) {
+      return Object.values(this.data).reduce((acc, week) => {
         return (acc += week.total[prop]);
       }, 0);
     },
   },
   mounted() {
-    window.cases = this.cases;
-    console.log(this.latestDate);
+    window.data = this.data;
   },
   async asyncData(context) {
-    return { cases: await getAndTransformData(SOURCE_DATA) };
+    return { data: await getAndTransformData(SOURCE_DATA) };
   },
 };
 </script>
 
-<style>
-@font-face {
-  font-family: "SF-Pro";
-  font-weight: 700;
-  src: url("~assets/fonts/SF-Pro-Text-Heavy.woff2");
-}
-
-@font-face {
-  font-family: "IBM Plex Sans";
-  font-weight: 400;
-  src: url("~assets/fonts/IBMPlexSans-Regular.woff2");
-}
-
-@font-face {
-  font-family: "IBM Plex Sans";
-  font-weight: 500;
-  src: url("~assets/fonts/IBMPlexSans-Medium.woff2");
-}
-
-@font-face {
-  font-family: "IBM Plex Sans";
-  font-weight: 700;
-  src: url("~assets/fonts/IBMPlexSans-Bold.woff2");
-}
-
-:root {
-  --blue: #0f73e8;
-  --grey: #333;
-}
+<style lang="scss">
+@import "~/assets/scss/_index.scss";
+// https://www.modularscale.com/?1&em&1.2
 
 body {
   color: var(--grey);
 }
 
-h1 {
+h1,
+h2 {
   font-family: "SF-Pro", Helvetica, sans-serif;
   margin-bottom: 1rem;
 }
 
+h1 {
+  font-size: 2.488rem;
+}
+
+h2 {
+  font-size: 2.074rem;
+}
+
 p {
+  font-size: 1rem;
   font-family: "IBM Plex Sans", Helvetica, sans-serif;
   margin-bottom: 1.2rem;
 }

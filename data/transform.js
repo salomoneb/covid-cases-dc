@@ -3,77 +3,22 @@ import { groupDataByWeek } from "~/data/time";
 export const getAndTransformData = async function (url) {
   return await fetch(url)
     .then((res) => res.text())
-    .then((res) => res.split("\n").slice(1))
-    .then(casesToJson)
-    .then(filterDc)
-    .then(sortData)
-    .then(groupDataByWeek)
-    .then(appendWeeklyAndTotalData);
+    .then((res) => res.split("\n").slice(1)) // Convert to array and remove headers
+    .then(casesToJson) // Convert to JSON
+    .then(filterDc) // Filter only DC
+    .then(sortData) // Sort by date
+    .then(groupData);
 };
 
-/**
- * Calculate weekly totals and deltas
- * @param {Object} data
- * @returns {Object}
- */
-function appendWeeklyAndTotalData(data) {
-  let augmented = {};
-  let prevWeekKey = "";
-
-  const dataArr = Object.entries(data);
-
-  for (let [index, [key, daily]] of dataArr.entries()) {
-    // Weekly stats
-    let weekly = {
-      number: index + 1,
-      deaths: {
-        total: sum(daily, "deaths"),
-        change: 0,
-      },
-      cases: {
-        total: sum(daily, "cases"),
-        change: 0,
-      },
-    };
-
-    // Total stats
-    let total = {
-      deaths: 0,
-      cases: 0,
-    };
-
-    // Week-over-week change
-    if (prevWeekKey) {
-      ["cases", "deaths"].forEach((prop) => {
-        let prev = augmented[prevWeekKey].weekly[prop].total;
-        let curr = weekly[prop].total;
-        weekly[prop].change = delta(prev, curr);
-
-        total[prop] += prev + curr;
-      });
-    }
-
-    augmented[key] = {
-      total,
-      weekly,
-      daily,
-    };
-
-    prevWeekKey = key;
-  }
-  return augmented;
-}
-
-function delta(prev, curr) {
-  if (prev === 0) {
-    if (curr > 1) {
-      prev = 1;
-    } else {
-      return 0;
-    }
-  }
-  // Assuming both current and previous totals positive
-  return ((curr - prev) / prev) * 100;
+function groupData(data) {
+  return {
+    daily: data,
+    weekly: groupDataByWeek(data),
+    total: {
+      cases: sum(data, "cases"),
+      deaths: sum(data, "deaths"),
+    },
+  };
 }
 
 function sum(arr, prop) {
@@ -90,12 +35,11 @@ function sum(arr, prop) {
 function casesToJson(allCases) {
   return allCases.map((el) => {
     let [date, state, fips, cases, deaths] = el.split(",");
-
     cases = parseInt(cases, 10);
     deaths = parseInt(deaths, 10);
 
     return {
-      date: new Date(date),
+      date: new Date(`${date} 00:00:00 EST`),
       state: state,
       cases: cases,
       deaths: deaths,
