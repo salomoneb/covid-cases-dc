@@ -153,9 +153,6 @@ p {
 
 a {
   color: var(--blue);
-}
-
-.attribution {
   font-style: italic;
 }
 

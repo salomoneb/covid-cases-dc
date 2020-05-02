@@ -2,7 +2,9 @@
   <div class="week-card--container">
     <h3 class="week-card__number uppercase">{{ formattedWeekNumber }}</h3>
     <p class="week-card__range">{{ formattedDate }}</p>
-    <p :class="['week-card__delta', deltaColor]">{{ formattedDelta }}</p>
+    <p :class="['week-card__delta', deltaClass]">
+      {{ deltaSymbol }}<span class="number">{{ formattedDelta }}</span>
+    </p>
   </div>
 </template>
 
@@ -45,15 +47,18 @@ export default {
     },
   },
   computed: {
-    deltaColor() {
-      if (this.deltaVisible > 0) {
-        return "increase";
-      } else if (this.deltaVisible < 0) {
-        return "decrease";
-      }
-    },
-    deltaVisible() {
+    delta() {
       return this[`${this.visible}Delta`];
+    },
+    deltaClass() {
+      return {
+        increase: this.delta > 0,
+        decrease: this.delta < 0,
+        neutral: this.delta === 0 || isNaN(this.delta),
+      };
+    },
+    deltaSymbol() {
+      return this.delta > 0 ? "+" : "-";
     },
     endingDate() {
       return this.end.getDate();
@@ -68,12 +73,10 @@ export default {
       return `${this.startingMonth} ${this.startingDate}-${this.endingDate}`;
     },
     formattedDelta() {
-      if (!isNaN(this.deltaVisible)) {
-        return this.deltaVisible > 0
-          ? `+${roundToHundredths(this.deltaVisible)}%`
-          : `${roundToHundredths(this.deltaVisible)}%`;
+      if (!isNaN(this.delta)) {
+        return `${roundToHundredths(Math.abs(this.delta))}%`;
       }
-      return this.deltaVisible;
+      return this.delta;
     },
     formattedWeekNumber() {
       return `Week ${this.number}`;
@@ -106,9 +109,18 @@ export default {
   }
 
   &__delta {
-    display: inline-block;
-    border-bottom: 1px dotted var(--grey);
     font-size: 2rem;
+
+    &.neutral {
+      opacity: 0.5;
+    }
+
+    .number {
+      border-bottom: 1px dotted var(--grey);
+      cursor: help;
+      display: inline-block;
+      line-height: 1.1;
+    }
   }
 }
 </style>
