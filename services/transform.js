@@ -10,6 +10,25 @@ export const getAndTransformData = async function (url) {
     .then(groupData);
 };
 
+export const calculateDelta = function (currWeek, prevWeek) {
+  // If the previous week was 0
+  if (prevWeek === 0) {
+    // If the current week is also 0, there's been no change, return 0
+    if (currWeek === 0) {
+      return 0;
+    }
+    return currWeek * 100;
+  }
+  // Assuming both current and previous totals positive
+  return ((currWeek - prevWeek) / prevWeek) * 100;
+};
+
+export const sum = function (arr, prop) {
+  return arr.reduce((acc, curr) => {
+    return (acc += curr[prop]);
+  }, 0);
+};
+
 function groupData(data) {
   return {
     daily: data,
@@ -19,12 +38,6 @@ function groupData(data) {
       deaths: sum(data, "deaths"),
     },
   };
-}
-
-function sum(arr, prop) {
-  return arr.reduce((acc, curr) => {
-    return (acc += curr[prop]);
-  }, 0);
 }
 
 /**

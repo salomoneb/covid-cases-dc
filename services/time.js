@@ -42,26 +42,46 @@ export const getFirstSunday = function (firstEntry) {
 
 /**
  * Group Covid data by week
+ * Returns a two dimensional array of weeks
  * @param {Array} sortedData
- * @returns {Object}
+ * @returns {Array}
  */
 export const groupDataByWeek = function (sortedData) {
   const MS_IN_WEEK = 24 * 7 * 60 * 60 * 1000;
 
   const firstSunday = getFirstSunday(sortedData[0].date);
   let currSunday = Date.parse(firstSunday);
-  let initial = {
-    [currSunday]: [],
-  };
 
-  return sortedData.reduce((acc, curr) => {
-    let nextSunday = Date.parse(new Date(currSunday + MS_IN_WEEK));
+  return sortedData.reduce(
+    (weeks, day, index) => {
+      let nextSunday = Date.parse(new Date(currSunday + MS_IN_WEEK));
+      let currentDate = Date.parse(day.date);
 
-    if (curr.date > nextSunday) {
-      currSunday = nextSunday;
-      acc[currSunday] = [];
-    }
-    acc[currSunday].push(curr);
-    return acc;
-  }, initial);
+      if (currentDate >= nextSunday) {
+        currSunday = nextSunday;
+        weeks.push([]);
+      }
+
+      let mostRecentWeekIndex = weeks.length - 1;
+      weeks[mostRecentWeekIndex].push(day);
+      return weeks;
+    },
+    [[]]
+  );
 };
+
+/*
+[
+  [
+    {
+      cases: "",
+      date: ""
+    },
+    {
+      cases: "",
+      date: ""
+    }
+  ],
+]
+
+*/

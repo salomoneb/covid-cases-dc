@@ -24,17 +24,14 @@
         @delta-type="setVisibleWeekDataType"
       />
       <week-card
-        v-for="(week, idx) in weekCardData"
+        v-for="(week, idx) in reverseChronWeekData"
         class="main__week-card"
-        :visibleWeekDataType="visibleWeekDataType"
         :key="idx"
-        :cases="week.cases"
-        :cases-delta="week.casesDelta"
-        :deaths-delta="week.deathsDelta"
-        :deaths="week.deaths"
-        :number="week.number"
-        :start="week.start"
-        :end="week.end"
+        :current-week="week"
+        :previous-week="reverseChronWeekData[idx + 1]"
+        :is-first-week="idx === reverseChronWeekData.length - 1"
+        :week-number="reverseChronWeekData.length - idx"
+        :week-type="visibleWeekDataType"
       ></week-card>
     </section>
   </div>
@@ -67,6 +64,9 @@ export default {
     WeekCard,
   },
   computed: {
+    reverseChronWeekData() {
+      return this.data.weekly.slice().reverse();
+    },
     latestDate() {
       const latestDay = this.data.daily[this.data.daily.length - 1].date;
 
@@ -84,35 +84,6 @@ export default {
     },
     totalDeaths() {
       return formatNum(this.data.total.deaths);
-    },
-    updatedWeekData() {
-      return Object.entries(this.data.weekly)
-        .reduce((weekAcc, weekCurr, index) => {
-          const data = {
-            cases: weekCurr[1].reduce((acc, curr) => (acc += curr.cases), 0),
-            deaths: weekCurr[1].reduce((acc, curr) => (acc += curr.deaths), 0),
-            number: index + 1,
-            start: weekCurr[1][0].date,
-            end: weekCurr[1][weekCurr[1].length - 1].date,
-          };
-
-          if (index > 0) {
-            let previousWeekCases = weekAcc[index - 1].cases;
-            data.casesDelta = this.delta(previousWeekCases, data.cases);
-
-            let previousWeekDeaths = weekAcc[index - 1].deaths;
-            data.deathsDelta = this.delta(previousWeekDeaths, data.deaths);
-          } else {
-            data.casesDelta = "N/A";
-            data.deathsDelta = "N/A";
-          }
-          weekAcc.push(data);
-          return weekAcc;
-        }, [])
-        .reverse();
-    },
-    weekCardData() {
-      return this.updatedWeekData;
     },
   },
   data() {
@@ -136,7 +107,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.$options);
     window.data = this.data;
   },
   async asyncData(context) {

@@ -9,49 +9,44 @@
 </template>
 
 <script>
+import { calculateDelta, sum } from "~/services/transform";
 import { roundToHundredths } from "~/services/numbers";
 import { getMonth } from "~/services/time";
 export default {
   props: {
-    cases: {
-      type: Number,
+    currentWeek: {
+      type: Array,
       required: true,
-      default: 0,
     },
-    casesDelta: {
-      type: Number | String,
+    isFirstWeek: {
+      type: Boolean,
       required: true,
-      default: 0,
+      default: false,
     },
-    deaths: {
-      type: Number,
-      required: true,
-      default: 0,
+    previousWeek: {
+      type: Array,
+      required: false,
+      default: () => [],
     },
-    deathsDelta: {
-      type: Number | String,
-      required: true,
-      default: 0,
-    },
-    number: {
+    weekNumber: {
       type: Number,
       required: true,
     },
-    start: {
-      type: Date,
-      required: true,
-    },
-    end: {
-      type: Date,
-      required: true,
-    },
-    visibleWeekDataType: {
+    weekType: {
       type: String,
+      required: true,
     },
   },
   computed: {
     delta() {
-      return this[`${this.visibleWeekDataType}Delta`];
+      if (this.isFirstWeek) return "N/A";
+      return calculateDelta(this.sumCurrentWeekData, this.sumPreviousWeekData);
+    },
+    sumCurrentWeekData() {
+      return sum(this.currentWeek, this.weekType);
+    },
+    sumPreviousWeekData() {
+      return sum(this.previousWeek, this.weekType);
     },
     deltaClass() {
       return {
@@ -69,13 +64,20 @@ export default {
         return "-";
       }
     },
+    endingDay() {
+      return this.currentWeek[this.currentWeek.length - 1].date;
+    },
     endingDate() {
-      return this.end.getDate();
+      return this.endingDay.getDate();
     },
     endingMonth() {
-      return getMonth(this.end.getMonth());
+      return getMonth(this.endingDay.getMonth());
     },
     formattedDate() {
+      if (this.currentWeek.length === 1) {
+        return `${this.startingMonth} ${this.startingDate}`;
+      }
+
       if (this.endingMonth !== this.startingMonth) {
         return `${this.startingMonth} ${this.startingDate}-${this.endingMonth} ${this.endingDate}`;
       }
@@ -88,14 +90,20 @@ export default {
       return this.delta;
     },
     formattedWeekNumber() {
-      return `Week ${this.number}`;
+      return `Week ${this.weekNumber}`;
+    },
+    startingDay() {
+      return this.currentWeek[0].date;
     },
     startingDate() {
-      return this.start.getDate();
+      return this.startingDay.getDate();
     },
     startingMonth() {
-      return getMonth(this.start.getMonth());
+      return getMonth(this.startingDay.getMonth());
     },
+  },
+  mounted() {
+    console.log(this.delta);
   },
 };
 </script>
