@@ -6,6 +6,7 @@ export const getAndTransformData = async function (url) {
     .then((res) => res.split("\n").slice(1)) // Convert to array and remove headers
     .then(casesToJson) // Convert to JSON
     .then(filterDc) // Filter only DC
+    .then(setDailyTotals)
     .then(sortData) // Sort by date
     .then(groupData);
 };
@@ -42,11 +43,11 @@ function groupData(data) {
 
 /**
  * Convert CSV cases to JSON
- * @param {Array} allCases
+ * @param {Array} data
  * @returns {Object}
  */
-function casesToJson(allCases) {
-  return allCases.map((el) => {
+function casesToJson(data) {
+  return data.map((el) => {
     let [date, state, fips, cases, deaths] = el.split(",");
     cases = parseInt(cases, 10);
     deaths = parseInt(deaths, 10);
@@ -71,8 +72,33 @@ function sortData(data) {
 
 /**
  * Filter data for DC
- * @param {Array} cases
+ * @param {Array} data
  */
-function filterDc(cases) {
-  return cases.filter((el) => el.state === "District of Columbia");
+function filterDc(data) {
+  return data.filter((el) => el.state === "District of Columbia");
+}
+
+/**
+ * NYTimes gives us cumulative totals, so we need to find daily
+ * @param {Object} data
+ */
+function setDailyTotals(data) {
+  let runningCasesTotal = 0;
+  let runningDeathsTotal = 0;
+
+  let clonedData = [];
+
+  for (let [idx, day] of data.entries()) {
+    let clonedDay = { ...day };
+
+    clonedDay.cases = Math.abs(runningCasesTotal - clonedDay.cases);
+    clonedDay.deaths = Math.abs(runningDeathsTotal - clonedDay.deaths);
+
+    runningCasesTotal += clonedDay.cases;
+    runningDeathsTotal += clonedDay.deaths;
+
+    clonedData.push(clonedDay);
+  }
+
+  return clonedData;
 }

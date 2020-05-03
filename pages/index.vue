@@ -18,7 +18,10 @@
       :sum-previous-week-data="hoveredPreviousWeekTotal"
     ></tool-tip>
     <section class="main__week-data">
-      <h2 class="span-full">Week-Over-Week Change</h2>
+      <h2 class="span-full">Percentage of Total Cases and Deaths</h2>
+      <p
+        class="span-full"
+      >The following chart shows the change in the percentage of weekly reported cases and deaths in Washington, DC. For example, if Week 1 had 80 new cases and Week 2 had 120 new cases, we would say that Week 2 cases increased 20%.</p>
       <radio-buttons
         class="span-full"
         :buttons="this.$options.WEEK_BUTTON_DATA"
@@ -34,6 +37,7 @@
         :current-week="week"
         :previous-week="reverseChronWeekData[idx + 1]"
         :is-first-week="idx === reverseChronWeekData.length - 1"
+        :total="data.total[visibleWeekDataType]"
         :week-number="reverseChronWeekData.length - idx"
         :week-type="visibleWeekDataType"
       ></week-card>
@@ -112,6 +116,7 @@ export default {
   },
   mounted() {
     window.data = this.data;
+
   },
   async asyncData(context) {
     return { data: await getAndTransformData(SOURCE_DATA) };

@@ -9,6 +9,8 @@
         @mouseover="$emit('stat-mouseover', mouseoverData)"
         @mouseout="$emit('stat-mouseout', mouseoutData)"
       >{{ formattedDelta }}</span>
+      <h3>{{percentageCurrentWeek}}</h3>
+      <h3>{{percentageChange}}</h3>
     </p>
   </div>
 </template>
@@ -33,6 +35,10 @@ export default {
       required: false,
       default: () => [],
     },
+    total: {
+      type: Number,
+      required: true
+    },
     weekNumber: {
       type: Number,
       required: true,
@@ -43,6 +49,15 @@ export default {
     },
   },
   computed: {
+    percentageChange() {
+      return this.percentageCurrentWeek - this.percentagePreviousWeek
+    },
+    percentageCurrentWeek() {
+      return roundToHundredths((this.sumCurrentWeekData / this.total) * 100);
+    },
+    percentagePreviousWeek() {
+      return roundToHundredths((this.sumPreviousWeekData / this.total) * 100);
+    },
     delta() {
       if (this.isFirstWeek) return "N/A";
       return calculateDelta(this.sumCurrentWeekData, this.sumPreviousWeekData);
@@ -122,7 +137,7 @@ export default {
     },
   },
   mounted() {
-    console.log(this.delta);
+    // console.log(this.delta);
   },
 };
 </script>
