@@ -3,18 +3,20 @@
     <h1 class="heading">Covid-19 Cases and Deaths in DC</h1>
     <p class="attribution">
       Data via
-      <a href="https://github.com/nytimes/covid-19-data" target="_blank"
-        >The New York Times</a
-      >.
+      <a href="https://github.com/nytimes/covid-19-data" target="_blank">The New York Times</a>.
     </p>
     <p>
       There have been
       <span class="stat">{{ totalCases }} reported cases</span>
-      and <span class="stat">{{ totalDeaths }} deaths</span> in DC as of
-      <span>{{ latestDate }}</span
-      >.
+      and
+      <span class="stat">{{ totalDeaths }} deaths</span> in DC as of
+      <span>{{ latestDate }}</span>.
     </p>
-
+    <tool-tip
+      :data-type="visibleWeekDataType"
+      :sum-current-week-data="hoveredCurrentWeekTotal"
+      :sum-previous-week-data="hoveredPreviousWeekTotal"
+    ></tool-tip>
     <section class="main__week-data">
       <h2 class="span-full">Week-Over-Week Change</h2>
       <radio-buttons
@@ -26,6 +28,8 @@
       <week-card
         v-for="(week, idx) in reverseChronWeekData"
         class="main__week-card"
+        @stat-mouseover="setToolTipData"
+        @stat-mouseout="setToolTipData"
         :key="idx"
         :current-week="week"
         :previous-week="reverseChronWeekData[idx + 1]"
@@ -40,6 +44,7 @@
 <script>
 import { getAndTransformData } from "~/services/transform";
 import { formatNum } from "~/services/numbers";
+import ToolTip from "~/components/ToolTip";
 import RadioButtons from "~/components/RadioButtons";
 import WeekCard from "~/components/WeekCard";
 
@@ -60,6 +65,7 @@ export default {
     },
   ],
   components: {
+    ToolTip,
     RadioButtons,
     WeekCard,
   },
@@ -88,19 +94,17 @@ export default {
   },
   data() {
     return {
+      isHovering: false,
+      hoveredCurrentWeekTotal: "",
+      hoveredPreviousWeekTotal: "",
       visibleWeekDataType: "cases",
     };
   },
   methods: {
-    delta(prevStat, currStat) {
-      if (prevStat === 0) {
-        if (currStat === 0) {
-          return 0;
-        }
-        prevStat = 1;
-      }
-      // Assuming both current and previous totals positive
-      return ((currStat - prevStat) / prevStat) * 100;
+    setToolTipData(e) {
+      this.isHovering = e.isHovering
+      this.hoveredCurrentWeekTotal = e.sumCurrentWeekData
+      this.hoveredPreviousWeekTotal = e.sumPreviousWeekData
     },
     setVisibleWeekDataType(e) {
       this.visibleWeekDataType = e;

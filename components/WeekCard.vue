@@ -3,7 +3,12 @@
     <h3 class="week-card__number uppercase">{{ formattedWeekNumber }}</h3>
     <p class="week-card__range">{{ formattedDate }}</p>
     <p :class="['week-card__delta', deltaClass]">
-      {{ deltaSymbol }}<span class="number">{{ formattedDelta }}</span>
+      {{ deltaSymbol }}
+      <span
+        class="number"
+        @mouseover="$emit('stat-mouseover', mouseoverData)"
+        @mouseout="$emit('stat-mouseout', mouseoutData)"
+      >{{ formattedDelta }}</span>
     </p>
   </div>
 </template>
@@ -42,12 +47,6 @@ export default {
       if (this.isFirstWeek) return "N/A";
       return calculateDelta(this.sumCurrentWeekData, this.sumPreviousWeekData);
     },
-    sumCurrentWeekData() {
-      return sum(this.currentWeek, this.weekType);
-    },
-    sumPreviousWeekData() {
-      return sum(this.previousWeek, this.weekType);
-    },
     deltaClass() {
       return {
         increase: this.delta > 0,
@@ -62,6 +61,20 @@ export default {
         return "+";
       } else if (this.delta < 0) {
         return "-";
+      }
+    },
+    mouseoverData() {
+      return {
+        isHovering: true,
+        sumCurrentWeekData: this.sumCurrentWeekData,
+        sumPreviousWeekData: this.sumPreviousWeekData
+      }
+    },
+    mouseoutData() {
+      return {
+        isHovering: false,
+        sumCurrentWeekData: "",
+        sumPreviousWeekData: ""
       }
     },
     endingDay() {
@@ -100,6 +113,12 @@ export default {
     },
     startingMonth() {
       return getMonth(this.startingDay.getMonth());
+    },
+    sumCurrentWeekData() {
+      return sum(this.currentWeek, this.weekType);
+    },
+    sumPreviousWeekData() {
+      return sum(this.previousWeek, this.weekType);
     },
   },
   mounted() {
