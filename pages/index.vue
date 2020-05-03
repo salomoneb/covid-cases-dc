@@ -1,38 +1,42 @@
 <template>
   <div class="root-container">
-    <div>
-      <h1 class="heading">Covid-19 Cases and Deaths in DC</h1>
-      <p class="attribution">
-        Data via
-        <a href="https://github.com/nytimes/covid-19-data" target="_blank"
-          >The New York Times</a
-        >.
-      </p>
-      <p>
-        There have been
-        <span class="stat">{{ totalCases }} reported cases</span>
-        and <span class="stat">{{ totalDeaths }} deaths</span> in DC as of
-        <span>{{ latestDate }}</span
-        >.
-      </p>
+    <h1 class="heading">Covid-19 Cases and Deaths in DC</h1>
+    <p class="attribution">
+      Data via
+      <a href="https://github.com/nytimes/covid-19-data" target="_blank"
+        >The New York Times</a
+      >.
+    </p>
+    <p>
+      There have been
+      <span class="stat">{{ totalCases }} reported cases</span>
+      and <span class="stat">{{ totalDeaths }} deaths</span> in DC as of
+      <span>{{ latestDate }}</span
+      >.
+    </p>
 
-      <section class="main__week-data">
-        <h2 class="span-full">Week-Over-Week Change</h2>
-        <radio-buttons class="span-full" />
-        <week-card
-          v-for="(week, idx) in weekCardData"
-          class="main__week-card"
-          :key="idx"
-          :cases="week.cases"
-          :cases-delta="week.casesDelta"
-          :deaths-delta="week.deathsDelta"
-          :deaths="week.deaths"
-          :number="week.number"
-          :start="week.start"
-          :end="week.end"
-        ></week-card>
-      </section>
-    </div>
+    <section class="main__week-data">
+      <h2 class="span-full">Week-Over-Week Change</h2>
+      <radio-buttons
+        class="span-full"
+        :buttons="this.$options.WEEK_BUTTON_DATA"
+        name="common"
+        @delta-type="setVisibleWeekDataType"
+      />
+      <week-card
+        v-for="(week, idx) in weekCardData"
+        class="main__week-card"
+        :visibleWeekDataType="visibleWeekDataType"
+        :key="idx"
+        :cases="week.cases"
+        :cases-delta="week.casesDelta"
+        :deaths-delta="week.deathsDelta"
+        :deaths="week.deaths"
+        :number="week.number"
+        :start="week.start"
+        :end="week.end"
+      ></week-card>
+    </section>
   </div>
 </template>
 
@@ -46,6 +50,18 @@ const SOURCE_DATA =
   "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv";
 
 export default {
+  WEEK_BUTTON_DATA: [
+    {
+      value: "cases",
+      name: "week-over-week-change",
+      default: true,
+    },
+    {
+      value: "deaths",
+      name: "week-over-week-change",
+      default: false,
+    },
+  ],
   components: {
     RadioButtons,
     WeekCard,
@@ -99,6 +115,11 @@ export default {
       return this.updatedWeekData;
     },
   },
+  data() {
+    return {
+      visibleWeekDataType: "cases",
+    };
+  },
   methods: {
     delta(prevStat, currStat) {
       if (prevStat === 0) {
@@ -110,8 +131,12 @@ export default {
       // Assuming both current and previous totals positive
       return ((currStat - prevStat) / prevStat) * 100;
     },
+    setVisibleWeekDataType(e) {
+      this.visibleWeekDataType = e;
+    },
   },
   mounted() {
+    console.log(this.$options);
     window.data = this.data;
   },
   async asyncData(context) {

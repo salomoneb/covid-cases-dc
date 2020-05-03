@@ -45,21 +45,29 @@ export default {
       type: Date,
       required: true,
     },
+    visibleWeekDataType: {
+      type: String,
+    },
   },
   computed: {
     delta() {
-      return this[`${this.visible}Delta`];
+      return this[`${this.visibleWeekDataType}Delta`];
     },
     deltaClass() {
       return {
         increase: this.delta > 0,
         decrease: this.delta < 0,
-        neutral: this.delta === 0 || isNaN(this.delta),
+        neutral: isNaN(this.delta),
       };
     },
     deltaSymbol() {
       if (isNaN(this.delta)) return;
-      return this.delta > 0 ? "+" : "-";
+
+      if (this.delta > 0) {
+        return "+";
+      } else if (this.delta < 0) {
+        return "-";
+      }
     },
     endingDate() {
       return this.end.getDate();
@@ -88,11 +96,6 @@ export default {
     startingMonth() {
       return getMonth(this.start.getMonth());
     },
-  },
-  data() {
-    return {
-      visible: "cases",
-    };
   },
 };
 </script>
